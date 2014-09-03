@@ -1,0 +1,9 @@
+# random files
+temp.png
+
+# composer
+composer.phar
+vendor/
+
+# editor
+.idea/
