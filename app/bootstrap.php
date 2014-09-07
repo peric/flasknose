@@ -4,9 +4,14 @@
 //    Silex\Provider\UrlGeneratorServiceProvider,
 //    Silex\Provider\HttpCacheServiceProvider,
 //    Silex\Provider\SessionServiceProvider;
-//
+
 $app = new Silex\Application();
-//
+
+$scriptsDirectory = '../scripts';
+$wparserDirectory = 'wparser';
+
+return $app;
+
 //$app['cache.path'] = __DIR__ . '/cache';
 //
 //$app->register(new SessionServiceProvider());
@@ -29,4 +34,3 @@ $app = new Silex\Application();
 //    ),
 //));
 //
-return $app;
