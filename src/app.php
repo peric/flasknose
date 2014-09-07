@@ -1,31 +1,17 @@
 <?php
-$app = new \Slim\Slim();
+use Symfony\Component\HttpFoundation\Response;
 
-$app->get('/evaluate/:name', function ($name) use ($app) {
-    echo "Hello, $name";
-})->name('evaluate');;
+$app->match('/', function() use ($app) {
+    return 'Hello man!';
+})->bind('home');
+
+$app->match('/evaluate/{url}', function($url) use ($app) {
+    return $url;
+})->bind('evaulate_url');
 
 // TODO: send url in /evaluate
 // TODO: add conditions to route
 // TODO: Check documentation, it's awesome!
-
-//$app->config(array(
-//    'debug' => true,
-//    'templates.path' => '../templates'
-//));
-
-//<?php
-////GET variable
-//$paramValue = $app->request->get('paramName');
-//
-////POST variable
-//$paramValue = $app->request->post('paramName');
-//
-////PUT variable
-//$paramValue = $app->request->put('paramName');
-
-// TODO: docs -> http://docs.slimframework.com/
-
 
 //// fetcher.php
 //
@@ -46,3 +32,15 @@ $app->get('/evaluate/:name', function ($name) use ($app) {
 //    $nocache = rand();
 //    echo("<img src='temp.png?$nocache' />");
 //}
+
+$app->error(function (\Exception $e, $code) {
+    switch ($code) {
+        case 404:
+            $message = 'The requested page could not be found.';
+            break;
+        default:
+            $message = 'We are sorry, but something went terribly wrong.';
+    }
+
+    return new Response($message, $code);
+});
