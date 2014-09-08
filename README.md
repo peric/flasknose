@@ -22,11 +22,11 @@ php composer.phar install
 ## Vagrant - shared directory setup
 
 ```
-config.vm.synced_folder "../master-thesis/flasknose-core/exports", "/var/www/webapp/exports", {:mount_options => ['dmode=777','fmode=777'], :owner => "www-data", :group => "www-data"}
+config.vm.synced_folder "../master-thesis/flasknose-core/files", "/var/www/webapp/files", {:mount_options => ['dmode=777','fmode=777'], :owner => "www-data", :group => "www-data"}
 ```
 
 or
 
 ```
-sudo chown -R www-data:www-data /exports
+sudo chown -R www-data:www-data /files
 ```

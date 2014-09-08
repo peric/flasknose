@@ -7,8 +7,9 @@
 
 $app = new Silex\Application();
 
+$filesDirectory = '../files';
 $scriptsDirectory = '../scripts';
-$wparserDirectory = 'wparser';
+$wparserDirectory = '../scripts/wparser';
 
 return $app;
 

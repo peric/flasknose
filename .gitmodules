@@ -1,3 +1,0 @@
-[submodule "scripts/wparser"]
-	path = scripts/wparser
-	url = git@github.com:peric/wparser.git
