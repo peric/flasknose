@@ -1,0 +1,12 @@
+/screenshots/*
+/output/*
+
+!.gitkeep
+
+*.pyc
+
+# custom files
+input/websites_list.csv
+
+# editor
+.idea/

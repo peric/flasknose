@@ -1,0 +1,5 @@
+# path to phantomjs directory - example: '/home/user/phantomjs-1.9.7-linux-x86_64/bin/'
+PHANTOMJS_DIRECTORY = '/usr/local/bin/'
+# full path to wparser directory, which is actually current working directory - example: '/home/user/wparserjspath/dev/wparser'
+WPARSER_DIRECTORY = '/var/www/webapp/scripts/wparser/'
+OUTPUT_CSV_DIRECTORY = '/var/www/webapp/files/csv/'

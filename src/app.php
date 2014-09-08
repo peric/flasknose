@@ -20,11 +20,11 @@ $app->get('/evaluate', function(Request $request) use ($app, $scriptsDirectory, 
 
         // TODO: Install python dependencies
         // TODO: Set up config and keep it in repo
-        $process = new Process("cd $scriptsDirectory/$wparserDirectory && python wparser.py");
-        $process->run();
+        $parser = new Process("cd $scriptsDirectory/$wparserDirectory && python wparser.py $url");
+        $parser->run();
 
-        echo $process->getOutput();
-        echo $process->getErrorOutput();
+        echo $parser->getOutput();
+        echo $parser->getErrorOutput();
 
         // TODO: after parsing, send parsed data to R script which will evaluate website (needs Rdata)
 
@@ -40,10 +40,11 @@ $app->get('/evaluate', function(Request $request) use ($app, $scriptsDirectory, 
         // TODO: decide about response format
         $testResponse = array('response' => 'testing');
 
-        return $app->json($testResponse);
+        return 'test';
 
-//        return "<img src='/exports/temp.png?$nocache' />";
+        //return $app->json($testResponse);
     }
+
     return $app->json($error, 404);
 })->bind('evaulate_url');
 

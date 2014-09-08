@@ -57,10 +57,11 @@ if (!args[1]) {
 }
 
 var url = args[1];
+var urlClear = url.replace(/[^\w\s!?]/g,'');
 
 function writeCsvFile() {
     var content = '',
-        path = "output/output.csv";
+        path = "output/output_" + urlClear + ".csv";
 
     if (allWebsitesData.length === 0) {
         console.log('Warning: There is no content to write.')
@@ -83,6 +84,8 @@ function writeCsvFile() {
     }
 
     fs.write(path, content, 'w');
+
+    phantom.exit(1);
 }
 
 function handlePage(url) {
@@ -119,7 +122,7 @@ function handlePage(url) {
                 console.log('console> ' + msg + ', line: ' + line + ', page: ' + page.url);
             };
 
-            var screenshotPath = 'screenshots/' + url.replace(/[^\w\s!?]/g,'') + '.png';
+            var screenshotPath = 'screenshots/' + urlClear + '.png';
 
             if (!fs.exists(screenshotPath)) {
                 page.render(screenshotPath, {format: 'png', quality: '100'});
@@ -346,22 +349,7 @@ var handlePageData = function(page, url, cssContents, attributes) {
 
     pageData['rss'] = $('link[type="application/rss+xml"]').length > 0;
 
-    // TODO: Don't know how
-    /*pageData['preprocessors'] = page.evaluate(function() {
-     return;
-     });*/
-
     pageData['import'] = css.indexOf('@import') > -1;
-
-    // TODO: Don't know how
-    /*pageData['frameworks'] = page.evaluate(function() {
-     return;
-     });*/
-
-    // TODO: Don't know how
-    /*pageData['cms_used'] = page.evaluate(function() {
-     return;
-     });*/
 
     pageData['twitter_bootstrap'] = $('link[href*="bootstrap"]').length > 0;
 
@@ -392,7 +380,6 @@ var handlePageData = function(page, url, cssContents, attributes) {
 
     pageData['flash'] = $('object[type="application/x-shockwave-flash"], embed[type="application/x-shockwave-flash"]').length > 0;
 
-    // TODO: Not sure about this
     pageData['page_weight'] = (function() {
         var pageSize = $('html').html().length;
         var kb = (pageSize / 1024).toFixed(2);
@@ -415,10 +402,6 @@ var handlePageData = function(page, url, cssContents, attributes) {
     pageData['conditional_comments'] = html.indexOf('<!--[if') > -1;
 
     pageData['included_multimedia'] = $('video, embed, object, audio, source').length > 0;
-
-    // TODO: Don't know how
-    //pageData['sprite_images'] = (function() {
-    // TODO: Go throuh elements and look for values of some css attributes
 
     pageData['minified_css'] = (function() {
         for (var i=0; i<cssContents.length; i++) {
@@ -466,5 +449,3 @@ handlePage(url);
 
 // give parser enough time to deal with one url
 setTimeout(writeCsvFile, 20000);
-
-phantom.exit(1);
