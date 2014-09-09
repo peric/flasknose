@@ -3,28 +3,26 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Process;
 
-$app->match('/', function() use ($app) {
-    return 'Hello test!';
-})->bind('home');
-
-$app->get('/evaluate', function(Request $request) use ($app, $scriptsDirectory, $wparserDirectory) {
-    // TODO before processing, check if it already exists in CSV or somewhere
+$app->get('/evaluate', function(Request $request) use ($app) {
     $error = array('message' => 'Url is not valid.');
 
     $url = $request->get('url');
 
     if ($url) {
+        // check if url is valid
         if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) {
             return $app->json($error, 404);
         }
 
-        // TODO: Install python dependencies
-        // TODO: Set up config and keep it in repo
-        $parser = new Process("cd $scriptsDirectory/$wparserDirectory && python wparser.py $url");
-        $parser->run();
+        $urlClear = preg_replace('/[^\w\s!?]/', '', $url);
 
-        echo $parser->getOutput();
-        echo $parser->getErrorOutput();
+        // Just use it as any Silex service
+        /*if (!$app['filesystem']->exists('any-absolute-or-relative-path...')) {
+        }*/
+
+        // TODO before processing, check if it already exists in CSV or somewhere
+        runParser($url);
+
 
         // TODO: after parsing, send parsed data to R script which will evaluate website (needs Rdata)
 
@@ -32,15 +30,11 @@ $app->get('/evaluate', function(Request $request) use ($app, $scriptsDirectory, 
 
         // TODO: return all that data to the extension
 
-        //
-
-        //$nocache = rand();
-
 
         // TODO: decide about response format
         $testResponse = array('response' => 'testing');
 
-        return 'test';
+        return "||||||||||||||| just testing |||||||||||||||";
 
         //return $app->json($testResponse);
     }
@@ -64,3 +58,33 @@ $app->error(function (\Exception $e, $code) {
 
     return new Response($message, $code);
 });
+
+
+function runParser($url)
+{
+    $parser = new Process(sprintf('cd %s && python wparser.py %s', WPARSER_DIRECTORY, $url));
+    $parser->run();
+
+    echo $parser->getOutput();
+    echo $parser->getErrorOutput();
+
+    echo $parser->getExitCodeText();
+}
+
+//function csv()
+//{
+//    $records = $app['db']->fetchAll($sql);
+//
+//    header("Content-Type: text/csv");
+//    header("Content-Disposition: attachment; filename=partial_customers.csv");
+//    header("Pragma: no-cache");
+//    header("Expires: 0");
+//
+//    $output = fopen("php://output", "w");
+//
+//    foreach ($records as $row)
+//        fputcsv($output, $row, ',');
+//
+//    fclose($output);
+//    exit();
+//}

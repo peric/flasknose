@@ -2,6 +2,6 @@
     "require": {
         "silex/silex": "~1.2",
         "symfony/process": "2.6.*@dev",
-        "symfony/filesystem": "2.6.*@dev"
+        "neutron/silex-filesystem-provider": "dev-master"
     }
 }

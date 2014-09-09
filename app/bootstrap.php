@@ -1,15 +1,12 @@
 <?php
-//use Silex\Provider\MonologServiceProvider,
-//    Silex\Provider\TwigServiceProvider,
-//    Silex\Provider\UrlGeneratorServiceProvider,
-//    Silex\Provider\HttpCacheServiceProvider,
-//    Silex\Provider\SessionServiceProvider;
 
 $app = new Silex\Application();
 
-$filesDirectory = '../files';
-$scriptsDirectory = '../scripts';
-$wparserDirectory = '../scripts/wparser';
+const FILES_DIRECTORY   = '../files';
+const SCRIPTS_DIRECTORY = '../scripts';
+const WPARSER_DIRECTORY = '../scripts/wparser';
+
+$app['debug'] = true;
 
 return $app;
 

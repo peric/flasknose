@@ -57,7 +57,7 @@ if (!args[1]) {
 }
 
 var url = args[1];
-var urlClear = url.replace(/[^\w\s!?]/g,'');
+var urlClear = url.replace(/[^\w\s!?]/g, '');
 
 function writeCsvFile() {
     var content = '',
