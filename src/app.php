@@ -15,14 +15,15 @@ $app->get('/evaluate', function(Request $request) use ($app) {
         }
 
         $urlClear = preg_replace('/[^\w\s!?]/', '', $url);
+        $csvFile  = sprintf('%s/%s.csv', CSV_FILES_DIRECTORY, $urlClear);
 
-        // Just use it as any Silex service
-        /*if (!$app['filesystem']->exists('any-absolute-or-relative-path...')) {
-        }*/
-
-        // TODO before processing, check if it already exists in CSV or somewhere
+        // Website should be always parsed from the beginning
         runParser($url);
 
+        // continue just if csv file is there
+        if ($app['filesystem']->exists($csvFile)) {
+            echo 'it fucking exists, yeah!';
+        }
 
         // TODO: after parsing, send parsed data to R script which will evaluate website (needs Rdata)
 

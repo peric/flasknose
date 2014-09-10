@@ -90,7 +90,7 @@ wparsercode = wparser()
 # continue with parsing and writing data
 if wparsercode == 1:
     output_csv = 'output/output_' + url_clear + '.csv'
-    output_final_csv = OUTPUT_CSV_DIRECTORY + 'output_final_' + url_clear + '.csv'
+    output_final_csv = OUTPUT_CSV_DIRECTORY + url_clear + '.csv'
 
     with open(output_csv,'r') as csvinput:
         with open(output_final_csv, 'w') as csvoutput:

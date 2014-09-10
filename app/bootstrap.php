@@ -1,12 +1,16 @@
 <?php
+use Neutron\Silex\Provider\FilesystemServiceProvider;
 
 $app = new Silex\Application();
 
-const FILES_DIRECTORY   = '../files';
-const SCRIPTS_DIRECTORY = '../scripts';
-const WPARSER_DIRECTORY = '../scripts/wparser';
+const FILES_DIRECTORY     = '../files';
+const CSV_FILES_DIRECTORY = '../files/csv';
+const SCRIPTS_DIRECTORY   = '../scripts';
+const WPARSER_DIRECTORY   = '../scripts/wparser';
 
 $app['debug'] = true;
+
+$app->register(new FilesystemServiceProvider());
 
 return $app;
 
