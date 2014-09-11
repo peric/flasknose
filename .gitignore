@@ -1,5 +1,5 @@
 # random files
-files/*
+data/*
 
 # composer
 composer.phar

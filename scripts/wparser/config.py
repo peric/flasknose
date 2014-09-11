@@ -2,4 +2,4 @@
 PHANTOMJS_DIRECTORY = '/usr/local/bin/'
 # full path to wparser directory, which is actually current working directory - example: '/home/user/wparserjspath/dev/wparser'
 WPARSER_DIRECTORY = '/var/www/webapp/scripts/wparser/'
-OUTPUT_CSV_DIRECTORY = '/var/www/webapp/files/csv/'
+OUTPUT_CSV_DIRECTORY = '/var/www/webapp/data/parsed/'

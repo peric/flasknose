@@ -3,10 +3,10 @@ use Neutron\Silex\Provider\FilesystemServiceProvider;
 
 $app = new Silex\Application();
 
-const FILES_DIRECTORY     = '../files';
-const CSV_FILES_DIRECTORY = '../files/csv';
-const SCRIPTS_DIRECTORY   = '../scripts';
-const WPARSER_DIRECTORY   = '../scripts/wparser';
+const DATA_DIRECTORY            = '../data';
+const PARSED_WEBSITES_DIRECTORY = '../data/parsed';
+const SCRIPTS_DIRECTORY         = '../scripts';
+const WPARSER_DIRECTORY         = '../scripts/wparser';
 
 $app['debug'] = true;
 

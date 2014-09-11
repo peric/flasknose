@@ -99,7 +99,7 @@ if wparsercode == 1:
             writer = csv.writer(csvoutput, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL, lineterminator='\n')
 
             htmlerrors(reader_list)
-            colors(reader_list,)
+            colors(reader_list)
 
             writer.writerows(reader_list)
 

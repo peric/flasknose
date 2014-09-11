@@ -14,39 +14,71 @@ $app->get('/evaluate', function(Request $request) use ($app) {
             return $app->json($error, 404);
         }
 
-        $urlClear = preg_replace('/[^\w\s!?]/', '', $url);
-        $csvFile  = sprintf('%s/%s.csv', CSV_FILES_DIRECTORY, $urlClear);
+        $urlClear  = preg_replace('/[^\w\s!?]/', '', $url);
+        $parsedCsv = sprintf('%s/%s.csv', PARSED_WEBSITES_DIRECTORY, $urlClear);
+
+        $response = array();
 
         // Website should be always parsed from the beginning
         runParser($url);
 
         // continue just if csv file is there
-        if ($app['filesystem']->exists($csvFile)) {
-            echo 'it fucking exists, yeah!';
+        if ($app['filesystem']->exists($parsedCsv)) {
+            // No. 1
+            // TODO: R script (needs Rdata)
+            // TODO: Write R script that takes csv file as parameter
+            // TODO: reads values for 20 best attributes (evaluated by relieff etc)
+            // TODO: sends this data to method that predicts final rating
+            // TODO: returns rating for website, and optimal values for all attributes
+            // TODO: website data is saved to csv file
+            // TODO: optimal values should be saved in some other csv file
+            // TODO: ...
+
+            // No. 2
+            // TODO: read csv files (for website data and optimal values)
+            // TODO: pack them in proper JSON format and return it back to the frontend app
+
+            // Random
+            // TODO: first, make evaluations and stuff and then finish R script evaluate.R
+
+            //function csv()
+            //{
+            //    $records = $app['db']->fetchAll($sql);
+            //
+            //    header("Content-Type: text/csv");
+            //    header("Content-Disposition: attachment; filename=partial_customers.csv");
+            //    header("Pragma: no-cache");
+            //    header("Expires: 0");
+            //
+            //    $output = fopen("php://output", "w");
+            //
+            //    foreach ($records as $row)
+            //        fputcsv($output, $row, ',');
+            //
+            //    fclose($output);
+            //    exit();
+            //}
+
+            $response = array(
+                'website' => array(
+                    'url' => 'http://www.moonleerecords.com',
+                    'text' => 15000,
+                    'img' => 23
+                ),
+                'optimal' => array(
+                    'text' => 3000,
+                    'img' => 15
+                )
+            );
         }
 
-        // TODO: after parsing, send parsed data to R script which will evaluate website (needs Rdata)
+        //return "||||||||||||||| just testing |||||||||||||||";
 
-        // TODO: create R script which will update hypothesis on daily basis
-
-        // TODO: return all that data to the extension
-
-
-        // TODO: decide about response format
-        $testResponse = array('response' => 'testing');
-
-        return "||||||||||||||| just testing |||||||||||||||";
-
-        //return $app->json($testResponse);
+        return $app->json($response);
     }
 
     return $app->json($error, 404);
 })->bind('evaulate_url');
-
-// TODO: Make proper stuff here
-// TODO: send url in /evaluate
-// TODO: add conditions to route
-// TODO: Check documentation, it's awesome!
 
 $app->error(function (\Exception $e, $code) {
     switch ($code) {
@@ -60,7 +92,7 @@ $app->error(function (\Exception $e, $code) {
     return new Response($message, $code);
 });
 
-
+// functions
 function runParser($url)
 {
     $parser = new Process(sprintf('cd %s && python wparser.py %s', WPARSER_DIRECTORY, $url));
@@ -72,20 +104,7 @@ function runParser($url)
     echo $parser->getExitCodeText();
 }
 
-//function csv()
-//{
-//    $records = $app['db']->fetchAll($sql);
-//
-//    header("Content-Type: text/csv");
-//    header("Content-Disposition: attachment; filename=partial_customers.csv");
-//    header("Pragma: no-cache");
-//    header("Expires: 0");
-//
-//    $output = fopen("php://output", "w");
-//
-//    foreach ($records as $row)
-//        fputcsv($output, $row, ',');
-//
-//    fclose($output);
-//    exit();
-//}
+function runEvaluator($csv)
+{
+
+}
