@@ -41,6 +41,8 @@ $app->get('/evaluate', function(Request $request) use ($app) {
             // Random
             // TODO: first, make evaluations and stuff and then finish R script evaluate.R
 
+
+
             //function csv()
             //{
             //    $records = $app['db']->fetchAll($sql);
