@@ -24,6 +24,7 @@ $app->get('/evaluate', function(Request $request) use ($app) {
 
         // continue just if csv file is there
         if ($app['filesystem']->exists($parsedCsv)) {
+            runEvaluator($parsedCsv);
             // No. 1
             // TODO: R script (needs Rdata)
             // TODO: Write R script that takes csv file as parameter
@@ -41,8 +42,8 @@ $app->get('/evaluate', function(Request $request) use ($app) {
             // Random
             // TODO: first, make evaluations and stuff and then finish R script evaluate.R
 
-
-
+            // TODO:
+            // TODO: Read optimal values from optimal.csv
             //function csv()
             //{
             //    $records = $app['db']->fetchAll($sql);
@@ -76,7 +77,9 @@ $app->get('/evaluate', function(Request $request) use ($app) {
 
         //return "||||||||||||||| just testing |||||||||||||||";
 
-        return $app->json($response);
+        //return $app->json($response);
+
+        return "bla";
     }
 
     return $app->json($error, 404);
@@ -94,7 +97,8 @@ $app->error(function (\Exception $e, $code) {
     return new Response($message, $code);
 });
 
-// functions
+// methods
+
 function runParser($url)
 {
     $parser = new Process(sprintf('cd %s && python wparser.py %s', WPARSER_DIRECTORY, $url));
@@ -104,9 +108,24 @@ function runParser($url)
     echo $parser->getErrorOutput();
 
     echo $parser->getExitCodeText();
+
+    // TODO: remove all echos
 }
 
-function runEvaluator($csv)
+function runEvaluator($csvFile)
 {
+    $csvFile = '../' . $csvFile;
 
+    $parser = new Process(sprintf('cd %s && Rscript evaluate.R %s', R_DIRECTORY, $csvFile));
+    $parser->run();
+
+    echo $parser->getOutput();
+    echo $parser->getErrorOutput();
+
+    echo $parser->getExitCodeText();
+}
+
+function getOptimalValues()
+{
+    // TODO:
 }

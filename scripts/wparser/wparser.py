@@ -96,11 +96,11 @@ if wparsercode == 1:
         with open(output_final_csv, 'w') as csvoutput:
             reader = csv.reader(csvinput)
             reader_list = list(reader)
-            writer = csv.writer(csvoutput, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL, lineterminator='\n')
+            writer = csv.writer(csvoutput, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
 
             htmlerrors(reader_list)
             colors(reader_list)
 
             writer.writerows(reader_list)
 
-    os.remove(output_csv)
+    # os.remove(output_csv)
