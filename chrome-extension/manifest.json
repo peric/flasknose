@@ -5,6 +5,8 @@
   "description": "Flasknose helps you build better websites.",
   "version": "1.0",
 
+  "permissions": ["tabs"],
+
   "browser_action": {
     "default_icon": "images/icon.png",
     "default_popup": "popup.html"

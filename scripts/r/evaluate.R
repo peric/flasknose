@@ -63,8 +63,11 @@ exampleToEvaluate = read.csv(parsedCsvFile, na.strings=c("", "NA", "NULL"), head
 # TODO: Put proper model here
 rf <- readRDS("rf.rds")
 
-prediction = predict(rf, exampleToEvaluate[1, ])
+rating = predict(rf, exampleToEvaluate[1, ])
 
-result = data.frame(url = exampleToEvaluate$url, prediction)
+url = exampleToEvaluate$url
+filename = basename(parsedCsvFile)
 
-write.csv(result, file = "../../exports/evaluated/test.csv", row.names = FALSE)
+result = data.frame(url = url, rating)
+
+write.csv(result, file = paste("../../exports/evaluated/", filename, sep = ""), row.names = FALSE)

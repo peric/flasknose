@@ -1,5 +1,0 @@
-# Change icon
-
-# Extensions can interact with web pages or servers using content scripts or cross-origin XMLHttpRequests. Extensions can also interact programmatically with browser features such as bookmarks and tabs.
-
-# 

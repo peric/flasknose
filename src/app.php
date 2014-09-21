@@ -4,85 +4,42 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Process\Process;
 
 $app->get('/evaluate', function(Request $request) use ($app) {
-    $error = array('message' => 'Url is not valid.');
+    header('Access-Control-Allow-Origin: *');
 
-    $url = $request->get('url');
+    $url          = $request->get('url');
+    $urlClear     = preg_replace('/[^\w\s!?]/', '', $url);
+    $parsedCsv    = sprintf('%s/%s.csv', PARSED_WEBSITES_DIRECTORY, $urlClear);
+    $evaluatedCsv = sprintf('%s/%s.csv', EVALUATED_WEBSITES_DIRECTORY, $urlClear);
 
     if ($url) {
         // check if url is valid
         if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) {
-            return $app->json($error, 404);
+            return $app->json(array('message' => 'Url is not valid.'), 404);
         }
 
-        $urlClear  = preg_replace('/[^\w\s!?]/', '', $url);
-        $parsedCsv = sprintf('%s/%s.csv', PARSED_WEBSITES_DIRECTORY, $urlClear);
-
-        $response = array();
-
-        // Website should be always parsed from the beginning
         runParser($url);
 
-        // continue just if csv file is there
-        if ($app['filesystem']->exists($parsedCsv)) {
-            runEvaluator($parsedCsv);
-            // No. 1
-            // TODO: R script (needs Rdata)
-            // TODO: Write R script that takes csv file as parameter
-            // TODO: reads values for 20 best attributes (evaluated by relieff etc)
-            // TODO: sends this data to method that predicts final rating
-            // TODO: returns rating for website, and optimal values for all attributes
-            // TODO: website data is saved to csv file
-            // TODO: optimal values should be saved in some other csv file
-            // TODO: ...
-
-            // No. 2
-            // TODO: read csv files (for website data and optimal values)
-            // TODO: pack them in proper JSON format and return it back to the frontend app
-
-            // Random
-            // TODO: first, make evaluations and stuff and then finish R script evaluate.R
-
-            // TODO:
-            // TODO: Read optimal values from optimal.csv
-            //function csv()
-            //{
-            //    $records = $app['db']->fetchAll($sql);
-            //
-            //    header("Content-Type: text/csv");
-            //    header("Content-Disposition: attachment; filename=partial_customers.csv");
-            //    header("Pragma: no-cache");
-            //    header("Expires: 0");
-            //
-            //    $output = fopen("php://output", "w");
-            //
-            //    foreach ($records as $row)
-            //        fputcsv($output, $row, ',');
-            //
-            //    fclose($output);
-            //    exit();
-            //}
-
-            $response = array(
-                'website' => array(
-                    'url' => 'http://www.moonleerecords.com',
-                    'text' => 15000,
-                    'img' => 23
-                ),
-                'optimal' => array(
-                    'text' => 3000,
-                    'img' => 15
-                )
-            );
+        if (!$app['filesystem']->exists($parsedCsv)) {
+            return $app->json(array('message' => 'Parsed csv file does not exist.'), 404);
         }
 
-        //return "||||||||||||||| just testing |||||||||||||||";
+        runEvaluator($parsedCsv);
 
-        //return $app->json($response);
+        if (!$app['filesystem']->exists($evaluatedCsv)) {
+            return $app->json(array('message' => 'Evaluated csv file does not exist.'), 404);
+        }
 
-        return "bla";
+        $response = generateResponse($parsedCsv, $evaluatedCsv);
+
+        // No. 2
+        // TODO: read csv files (for website data and optimal values)
+
+        // TODO: Read optimal values from optimal.csv
+
+        return $app->json($response);
     }
 
-    return $app->json($error, 404);
+    return $app->json(array('message' => 'Url is not valid.'), 404);
 })->bind('evaulate_url');
 
 $app->error(function (\Exception $e, $code) {
@@ -97,35 +54,137 @@ $app->error(function (\Exception $e, $code) {
     return new Response($message, $code);
 });
 
-// methods
-
+// runs phantomjs parser
 function runParser($url)
 {
     $parser = new Process(sprintf('cd %s && python wparser.py %s', WPARSER_DIRECTORY, $url));
     $parser->run();
-
-    echo $parser->getOutput();
-    echo $parser->getErrorOutput();
-
-    echo $parser->getExitCodeText();
-
-    // TODO: remove all echos
 }
 
+// runs R evaluator
 function runEvaluator($csvFile)
 {
     $csvFile = '../' . $csvFile;
 
     $parser = new Process(sprintf('cd %s && Rscript evaluate.R %s', R_DIRECTORY, $csvFile));
     $parser->run();
-
-    echo $parser->getOutput();
-    echo $parser->getErrorOutput();
-
-    echo $parser->getExitCodeText();
 }
 
+// generates response
+function generateResponse($parsedCsv, $evaluatedCsv)
+{
+    $websiteValues = getAttributeValues($parsedCsv);
+    $optimalValues = getOptimalValues();
+
+    $websiteValues['rating'] = getRating($evaluatedCsv);
+
+    return array(
+        'website' => $websiteValues,
+        'optimal' => $optimalValues
+    );
+}
+
+// gets array of attribute values from parsed csv file
+function getAttributeValues($csvFile)
+{
+    $row = 1;
+    if (($handle = fopen($csvFile, "r")) !== FALSE) {
+        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            if($row == 1) {
+                $row++;
+                continue;
+            }
+
+            return array(
+                'url' => $data[0],
+                'text' => $data[1],
+                'html_elements' => $data[2],
+                'headings' => $data[3],
+                'paragraphs' => $data[4],
+                'images' => $data[5],
+                'font_families' => $data[6],
+                'font_sizes' => $data[7],
+                'links' => $data[8],
+                'divs' => $data[9],
+                'ids' => $data[10],
+                'classes' => $data[11],
+                'css_external' => $data[12],
+                'css_internal' => $data[13],
+                'css_inline' => $data[14],
+                'css_declaration_blocks' => $data[15],
+                'css_prefixes' => $data[16],
+                'js_sources' => $data[17],
+                'meta_tags' => $data[18],
+                'has_meta_keywords' => $data[19],
+                'has_meta_description' => $data[20],
+                'rss' => $data[21],
+                'import' => $data[22],
+                'twitter_bootstrap' => $data[23],
+                'html5_tags' => $data[24],
+                'html5' => $data[25],
+                'css_transitions' => $data[26],
+                'flash' => $data[27],
+                'page_weight' => $data[28],
+                'media_queries' => $data[29],
+                'conditional_comments' => $data[30],
+                'included_multimedia' => $data[31],
+                'minified_css' => $data[32],
+                'font_families_list' => $data[33],
+                'h1_font' => $data[34],
+                'h2_font' => $data[35],
+                'h3_font' => $data[36],
+                'h4_font' => $data[37],
+                'h5_font' => $data[38],
+                'p_font' => $data[39],
+                'a_font' => $data[40],
+                'reset_css' => $data[41],
+                'normalize_css' => $data[42],
+                'css_pseudo_elements' => $data[43],
+                'no_js' => $data[44],
+                'html_errors' => $data[45],
+                'colors' => $data[46],
+                'color_palette' => $data[47],
+                'dominant_color' => $data[48],
+            );
+        }
+        fclose($handle);
+    }
+
+    $values = array();
+
+    return $values;
+}
+
+// get rounded rating from evaluated csv file
+function getRating($csvFile)
+{
+    $row = 1;
+    if (($handle = fopen($csvFile, "r")) !== FALSE) {
+        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            if($row == 1) {
+                $row++;
+                continue;
+            }
+
+            // [0] url
+            // [1] rating
+            return round($data[1] * 10, 2);
+        }
+
+        fclose($handle);
+    }
+
+    return false;
+}
+
+// gets optimal values
 function getOptimalValues()
 {
+
+    // read from OPTIMAL_VALUES_CSV
     // TODO:
+    // TODO: Read optimal values from optimal.csv
+    // TODO: maybe rename this method?
+
+    return array();
 }
