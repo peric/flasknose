@@ -1,5 +1,25 @@
-var evaluateButton = document.getElementById('evaluate');
-var request = new XMLHttpRequest();
+var $ = jQuery;
+var $evaluateButton = $('#evaluate-button');
+var spinnerTarget = document.getElementById('spinner');
+var opts = {
+    lines: 7, // The number of lines to draw
+    length: 0, // The length of each line
+    width: 5, // The line thickness
+    radius: 7, // The radius of the inner circle
+    corners: 0.7, // Corner roundness (0..1)
+    rotate: 0, // The rotation offset
+    direction: 1, // 1: clockwise, -1: counterclockwise
+    color: '#000', // #rgb or #rrggbb or array of colors
+    speed: 1, // Rounds per second
+    trail: 81, // Afterglow percentage
+    shadow: false, // Whether to render a shadow
+    hwaccel: false, // Whether to use hardware acceleration
+    className: 'spinner', // The CSS class to assign to the spinner
+    zIndex: 2e9, // The z-index (defaults to 2000000000)
+    top: '50%', // Top position relative to parent
+    left: '50%' // Left position relative to parent
+};
+var spinner = new Spinner(opts);
 var currentUrl;
 
 // gets current url - getSelected is asynchronous
@@ -7,31 +27,10 @@ chrome.tabs.getSelected(null, function(tab) {
     currentUrl = tab.url;
 });
 
-evaluateButton.onclick = function() {
+$evaluateButton.on("click", function() {
     if (!currentUrl) {
         return;
     }
-
-    var opts = {
-        lines: 7, // The number of lines to draw
-        length: 0, // The length of each line
-        width: 5, // The line thickness
-        radius: 7, // The radius of the inner circle
-        corners: 0.7, // Corner roundness (0..1)
-        rotate: 0, // The rotation offset
-        direction: 1, // 1: clockwise, -1: counterclockwise
-        color: '#000', // #rgb or #rrggbb or array of colors
-        speed: 1, // Rounds per second
-        trail: 81, // Afterglow percentage
-        shadow: false, // Whether to render a shadow
-        hwaccel: false, // Whether to use hardware acceleration
-        className: 'spinner', // The CSS class to assign to the spinner
-        zIndex: 2e9, // The z-index (defaults to 2000000000)
-        top: '50%', // Top position relative to parent
-        left: '50%' // Left position relative to parent
-    };
-    var target = document.getElementById('spinner');
-    var spinner = new Spinner(opts);
 
     var request = new XMLHttpRequest();
 
@@ -45,12 +44,45 @@ evaluateButton.onclick = function() {
 
     request.send();
 
-    spinner.spin(target);
-};
+    spinner.spin(spinnerTarget);
+});
 
 function showResults(data) {
-    // TODO: show results on the frontend
-    var jsonResponse = JSON.parse(data);
+    var jsonResponse     = JSON.parse(data);
+    var $results         = $('#results');
+    var $resultsTable    = $('#results-table');
+    var websiteData      = jsonResponse['website'];
+    var attributesToShow = [
+        'links', 'css_transitions', 'css_prefixes', 'colors', 'html_elements',
+        'page_weight', 'paragraphs', 'has_meta_description', 'text',
+        'weight', 'font_families', 'ids', 'headings', 'css_pseudo_elements',
+        'flash', 'rss', 'html5_tags', 'included_multimedia', 'conditional_comments', 'normalize_css', 'rating'
+    ]; // TODO: add proper list of attributes here
 
-    console.log(jsonResponse);
+    for (var attribute in websiteData) {
+        // if attribute is not in array, continue
+        if (attributesToShow.indexOf(attribute) < 0) {
+            continue;
+        }
+
+        // show rating
+        if (attribute === 'rating') {
+            console.log(websiteData[attribute]);
+            $results.find('.rating > .score').html(websiteData[attribute]);
+            continue;
+        }
+
+        $resultsTable.find('tr:last').after(
+            '<tr>' +
+                '<td>' + attribute + '</td>' +
+                '<td>' + websiteData[attribute] + '</td>' +
+                '<td><span class="check-mark mark"></span><span class="x-mark mark"></span></td>' +
+                '<td>/</td>' +
+            '</tr>');
+    }
+
+    $results.show();
+
+    // TODO: do something with optimal values
+    // TODO: show x/j that depend on values
 }

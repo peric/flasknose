@@ -135,10 +135,6 @@ function handlePage(url) {
                 var $ = jQuery;
 
                 function cssIsReachable(cssUrl) {
-                    // TODO: How to deal with unreachable CSS files???
-                    // TODO: Some urls are not reachable (cross-browser request)
-                    // TODO: Maybe would make sense to completely avoid them
-
                     var shortPageUrl = page.url.substr(page.url.indexOf(".") + 1);
 
                     // url starts with http and if it contains page domain
@@ -169,7 +165,6 @@ function handlePage(url) {
                     return cssUrl;
                 }
 
-                // TODO: Add also custom css styles (which are under style tags) to cssContent
                 $('link[rel="stylesheet"]').each(function() {
                     var cssUrl = $(this).attr('href');
 

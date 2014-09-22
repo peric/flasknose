@@ -31,11 +31,6 @@ $app->get('/evaluate', function(Request $request) use ($app) {
 
         $response = generateResponse($parsedCsv, $evaluatedCsv);
 
-        // No. 2
-        // TODO: read csv files (for website data and optimal values)
-
-        // TODO: Read optimal values from optimal.csv
-
         return $app->json($response);
     }
 
@@ -180,9 +175,8 @@ function getRating($csvFile)
 // gets optimal values
 function getOptimalValues()
 {
-
-    // read from OPTIMAL_VALUES_CSV
     // TODO:
+    // read from OPTIMAL_VALUES_CSV
     // TODO: Read optimal values from optimal.csv
     // TODO: maybe rename this method?
 

@@ -1,6 +1,25 @@
 # Flasknose-core
 
-Project is using Silex framework. http://silex.sensiolabs.org/
+Project is using PHP Silex framework, phantomjs, python and R.
+
+## Modules
+
+### Core module
+
+Core module communicates with Chrome extension, parser and evaluator. It receives a HTTP request and returns proper response.
+
+### Parser
+
+Parser is written in phantomjs and python. You can read more about it [here](https://github.com/peric/wparser/blob/master/README.md).
+
+### Evaluator
+
+Evaluator module is written in R and it's using already built prediction model based on randomForest.
+
+### Chrome extension
+
+Flasknose Chrome extension can be found in chrome-extension directory.
+You can find out here how to load and test extension. https://developer.chrome.com/extensions/getstarted#unpacked
 
 ## Prerequisites
 
