@@ -60,8 +60,7 @@ parsedCsvFile = args[1]
 exampleToEvaluate = read.csv(parsedCsvFile, na.strings=c("", "NA", "NULL"), header=TRUE, colClasses=colClassesUsed)
 
 # model
-# TODO: Put proper model here
-rf <- readRDS("rf.rds")
+rf <- readRDS("../../data/rf.rds")
 
 rating = predict(rf, exampleToEvaluate[1, ])
 
