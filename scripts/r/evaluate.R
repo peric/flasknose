@@ -1,4 +1,5 @@
 library("randomForest")
+library("CORElearn")
 
 colClassesUsed = c(
     "url" = "factor",
@@ -61,8 +62,10 @@ exampleToEvaluate = read.csv(parsedCsvFile, na.strings=c("", "NA", "NULL"), head
 
 # model
 rf <- readRDS("../../data/rf.rds")
+# rt <- readRDS("../../data/rt.rds")
 
 rating = predict(rf, exampleToEvaluate[1, ])
+# rating = predict(rt, exampleToEvaluate[1, ])
 
 url = exampleToEvaluate$url
 filename = basename(parsedCsvFile)
