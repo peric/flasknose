@@ -52,29 +52,18 @@ function showResults(data) {
     var $results         = $('#results');
     var $resultsTable    = $('#results-table');
     var websiteData      = jsonResponse['website'];
-    var attributesToShow = [
-        'links', 'css_transitions', 'css_prefixes', 'colors', 'html_elements',
-        'page_weight', 'paragraphs', 'has_meta_description', 'text',
-        'weight', 'font_families', 'ids', 'headings', 'css_pseudo_elements',
-        'flash', 'rss', 'html5_tags', 'included_multimedia', 'conditional_comments', 'normalize_css', 'rating'
-    ]; // TODO: add proper list of attributes here
+    var attributesData   = jsonResponse['attributesData'];
 
     for (var attribute in websiteData) {
-        // if attribute is not in array, continue
-        if (attributesToShow.indexOf(attribute) < 0) {
-            continue;
-        }
-
         // show rating
         if (attribute === 'rating') {
-            console.log(websiteData[attribute]);
             $results.find('.rating > .score').html(websiteData[attribute]);
             continue;
         }
 
         $resultsTable.find('tr:last').after(
             '<tr>' +
-                '<td>' + attribute + '</td>' +
+                '<td>' + attributesData[attribute]['description'] + '</td>' +
                 '<td>' + websiteData[attribute] + '</td>' +
                 '<td><span class="check-mark mark"></span><span class="x-mark mark"></span></td>' +
                 '<td>/</td>' +

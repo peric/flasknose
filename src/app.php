@@ -68,29 +68,57 @@ function runEvaluator($csvFile)
 // generates response
 function generateResponse($parsedCsv, $evaluatedCsv)
 {
-    $websiteValues = getAttributeValues($parsedCsv);
-    $optimalValues = getOptimalValues();
+    $attributesData = getAttributesData();
+    $websiteValues  = getAttributeValues($parsedCsv, $attributesData);
+    $optimalValues  = getOptimalValues();
+
+    // TODO: get attribute data and send it to attribute values method
 
     $websiteValues['rating'] = getRating($evaluatedCsv);
 
     return array(
-        'website' => $websiteValues,
-        'optimal' => $optimalValues
+        'website'        => $websiteValues,
+        'attributesData' => $attributesData,
     );
 }
 
-// gets array of attribute values from parsed csv file
-function getAttributeValues($csvFile)
+function getAttributesData()
 {
+    $attributesData = array();
+
+    // read attributes names
+    // TODO: Get attribute optimal data etc to here
+    // TODO: Add optimal value here
+    // TODO: Use optimal value to check "validity"
+
     $row = 1;
+    if (($handle = fopen(ATTRIBUTES_CSV, "r")) !== FALSE) {
+        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            if($row == 1) {
+                $row++;
+                continue;
+            }
+            $attributesData[$data[0]]['description'] = $data[1];
+        }
+    }
+
+    return $attributesData;
+}
+
+// gets array of attribute values from parsed csv file
+function getAttributeValues($csvFile, $attributesData)
+{
+    // read parsed file
     if (($handle = fopen($csvFile, "r")) !== FALSE) {
+        // it's always just one row here
+        $row = 1;
         while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
             if($row == 1) {
                 $row++;
                 continue;
             }
 
-            return array(
+            $allValues = array(
                 'url' => $data[0],
                 'text' => $data[1],
                 'html_elements' => $data[2],
@@ -141,13 +169,18 @@ function getAttributeValues($csvFile)
                 'color_palette' => $data[47],
                 'dominant_color' => $data[48],
             );
+            $values = array();
+
+            foreach ($attributesData as $attribute => $data) {
+                $values[$attribute] = $allValues[$attribute];
+            }
+
+            return $values;
         }
         fclose($handle);
     }
 
-    $values = array();
-
-    return $values;
+    return array();
 }
 
 // get rounded rating from evaluated csv file
