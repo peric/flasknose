@@ -6,16 +6,19 @@ use Symfony\Component\Process\Process;
 $app->get('/evaluate', function(Request $request) use ($app) {
     header('Access-Control-Allow-Origin: *');
 
-    $url          = $request->get('url');
-    $urlClear     = preg_replace('/[^\w\s!?]/', '', $url);
-    $parsedCsv    = sprintf('%s/%s.csv', PARSED_WEBSITES_DIRECTORY, $urlClear);
-    $evaluatedCsv = sprintf('%s/%s.csv', EVALUATED_WEBSITES_DIRECTORY, $urlClear);
+    $url = $request->get('url');
 
     if ($url) {
         // check if url is valid
         if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) {
             return $app->json(array('message' => 'Url is not valid.'), 404);
         }
+
+        $url = preg_replace("/^https:/i", "http:", $url);
+
+        $urlClear     = preg_replace('/[^\w\s!?]/', '', $url);
+        $parsedCsv    = sprintf('%s/%s.csv', PARSED_WEBSITES_DIRECTORY, $urlClear);
+        $evaluatedCsv = sprintf('%s/%s.csv', EVALUATED_WEBSITES_DIRECTORY, $urlClear);
 
         runParser($url);
 
@@ -90,6 +93,8 @@ function getAttributesData()
     // TODO: Get attribute optimal data etc to here
     // TODO: Add optimal value here
     // TODO: Use optimal value to check "validity"
+
+
 
     $row = 1;
     if (($handle = fopen(ATTRIBUTES_CSV, "r")) !== FALSE) {
@@ -208,6 +213,8 @@ function getRating($csvFile)
 // gets optimal values
 function getOptimalValues()
 {
+
+
     // TODO:
     // read from OPTIMAL_VALUES_CSV
     // TODO: Read optimal values from optimal.csv

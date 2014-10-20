@@ -1,5 +1,6 @@
 library("randomForest")
 library("CORElearn")
+library("kknn")
 
 colClassesUsed = c(
     "url" = "factor",
@@ -62,12 +63,22 @@ exampleToEvaluate = read.csv(parsedCsvFile, na.strings=c("", "NA", "NULL"), head
 
 # model
 rf <- readRDS("../../data/rf.rds")
+formula <- readRDS("../../data/formula.rds")
+# rt <- readRDS("../../data/rt.rds")
 
 rating = predict(rf, exampleToEvaluate[1, ])
+# rating = predict(rt, exampleToEvaluate[1, ])
+
+
+trainingSet = read.csv("../../data/dataset_extended.csv", na.strings=c("", "NA", "NULL"), header=TRUE, colClasses=colClassesUsed)
+
+knn = kknn(formula, trainingSet, exampleToEvaluate[1, ], k=3)
 
 url = exampleToEvaluate$url
 filename = basename(parsedCsvFile)
 
-result = data.frame(url = url, rating)
+result = data.frame(url = url, fitted(knn))
+
+# result = data.frame(url = url, rating)
 
 write.csv(result, file = paste("../../exports/evaluated/", filename, sep = ""), row.names = FALSE)
