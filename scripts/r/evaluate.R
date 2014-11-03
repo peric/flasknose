@@ -71,3 +71,6 @@ filename = basename(parsedCsvFile)
 result = data.frame(url = url, rating)
 
 write.csv(result, file = paste("../../exports/evaluated/", filename, sep = ""), row.names = FALSE)
+
+# TODO: use and show (on frontend) only needed data
+# TODO: use razlaga.R here?
