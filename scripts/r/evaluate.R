@@ -1,6 +1,8 @@
 library("randomForest")
 library("CORElearn")
 
+source("razlaga.R")
+
 colClassesUsed = c(
     "url" = "factor",
     "text" = "integer",
@@ -57,20 +59,59 @@ args = commandArgs(TRUE)
 
 parsedCsvFile = args[1]
 
-# csv file is without rating and without weight
+# exampleToEvaluate is without rating and weight
 exampleToEvaluate = read.csv(parsedCsvFile, na.strings=c("", "NA", "NULL"), header=TRUE, colClasses=colClassesUsed)
+colClassesUsed["weight"] = "NULL"
+colClassesUsed["rating"] = "NULL"
+trainingSet = read.csv("../../data/dataset_extended.csv", na.strings=c("", "NA", "NULL"), header=TRUE, colClasses=colClassesUsed)
+selectedAttributes = readRDS("../../data/rds/selectedAttributes.rds")
 
-# model
-rf <- readRDS("../../data/rf.rds")
+rfRegular = readRDS("../../data/rds/rf.rds")
+rfNormalized = readRDS("../../data/rds/rfNormalized.rds")
 
-rating = predict(rf, exampleToEvaluate[1, ])
+trainingSetNormalized = trainingSet
+exampleToEvaluateNormalized = exampleToEvaluate
+
+# normalize and discretize everything
+attributeNames = names(trainingSetNormalized)
+for (i in 1:length(attributeNames)) {
+    # rating is already normalized
+    if (attributeNames[i] != 'rating' && attributeNames[i] != 'weight') {
+        if (is.factor(trainingSetNormalized[, attributeNames[i]]) != TRUE) {
+            if (is.logical(trainingSet[, attributeNames[i]])) {
+                trainingSetNormalized[, attributeNames[i]] = trainingSetNormalized[, attributeNames[i]] * 1
+                trainingSetNormalized[, attributeNames[i]] = factor(trainingSetNormalized[, attributeNames[i]])
+                exampleToEvaluateNormalized[, attributeNames[i]] = factor(exampleToEvaluateNormalized[, attributeNames[i]] * 1, levels = c("0", "1"))
+            } else {
+                maxVal = max(trainingSetNormalized[, attributeNames[i]], exampleToEvaluateNormalized[1, attributeNames[i]])
+                trainingSetNormalized[, attributeNames[i]] = as.numeric(trainingSetNormalized[, attributeNames[i]] / maxVal)
+                exampleToEvaluateNormalized[, attributeNames[i]] = as.numeric(exampleToEvaluateNormalized[, attributeNames[i]] / maxVal)
+            }
+        }
+    }
+}
+
+# instance explanation
+instanceExplanation = explainInstance(rfNormalized, trainingSetNormalized, exampleToEvaluateNormalized[1,], 200)
+instanceAttributes = names(instanceExplanation$instance[1:length(instanceExplanation$instance)])
+instData = data.frame(attributes = factor(instanceAttributes), explanation = instanceExplanation$explanation, value = c(unlist(instanceExplanation$instance[1:length(instanceExplanation$instance)])))
+
+attrToRemove = c()
+for (i in 1:length(instData$attributes)) {
+    if (!instData$attributes[i] %in% selectedAttributes) {
+        attrToRemove = c(attrToRemove, i)
+    }
+}
+instData = instData[-attrToRemove,]
+
+# rating prediction
+rating = predict(rfRegular, exampleToEvaluate[1, ])
 
 url = exampleToEvaluate$url
 filename = basename(parsedCsvFile)
 
-result = data.frame(url = url, rating)
+ratingData = data.frame(url = url, rating)
 
-write.csv(result, file = paste("../../exports/evaluated/", filename, sep = ""), row.names = FALSE)
-
-# TODO: use and show (on frontend) only needed data
-# TODO: use razlaga.R here?
+# write data
+write.csv(instData, file = paste("../../exports/explained/", filename, sep = ""), row.names = FALSE)
+write.csv(ratingData, file = paste("../../exports/evaluated/", filename, sep = ""), row.names = FALSE)

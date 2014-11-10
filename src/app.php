@@ -19,6 +19,7 @@ $app->get('/evaluate', function(Request $request) use ($app) {
         $urlClear     = preg_replace('/[^\w\s!?]/', '', $url);
         $parsedCsv    = sprintf('%s/%s.csv', PARSED_WEBSITES_DIRECTORY, $urlClear);
         $evaluatedCsv = sprintf('%s/%s.csv', EVALUATED_WEBSITES_DIRECTORY, $urlClear);
+        $explainedCsv = sprintf('%s/%s.csv', EXPLAINED_WEBSITES_DIRECTORY, $urlClear);
 
         runParser($url);
 
@@ -32,7 +33,7 @@ $app->get('/evaluate', function(Request $request) use ($app) {
             return $app->json(array('message' => 'Evaluated csv file does not exist.'), 404);
         }
 
-        $response = generateResponse($parsedCsv, $evaluatedCsv);
+        $response = generateResponse($parsedCsv, $evaluatedCsv, $explainedCsv);
 
         return $app->json($response);
     }
@@ -47,71 +48,96 @@ $app->error(function (\Exception $e, $code) {
             break;
         default:
             $message = 'We are sorry, but something went terribly wrong.';
+            $message .= "\n" . $e->getMessage();
     }
 
     return new Response($message, $code);
 });
 
-// runs phantomjs parser
+/**
+ * Runs phantomjs/python parser
+ *
+ * @param $url
+ */
 function runParser($url)
 {
     $parser = new Process(sprintf('cd %s && python wparser.py %s', WPARSER_DIRECTORY, $url));
+    $parser->setTimeout(1200);
+    $parser->setIdleTimeout(1200);
+
     $parser->run();
 }
 
-// runs R evaluator
+/**
+ * Runs R evaluator
+ *
+ * @param $csvFile
+ */
 function runEvaluator($csvFile)
 {
     $csvFile = '../' . $csvFile;
 
-    $parser = new Process(sprintf('cd %s && Rscript evaluate.R %s', R_DIRECTORY, $csvFile));
-    $parser->run();
+    $evaluator = new Process(sprintf('cd %s && Rscript evaluate.R %s', R_DIRECTORY, $csvFile));
+    $evaluator->setTimeout(1200);
+    $evaluator->setIdleTimeout(1200);
+
+    $evaluator->run();
 }
 
-// generates response
-function generateResponse($parsedCsv, $evaluatedCsv)
+/**
+ * Generates array response
+ *
+ * @param $parsedCsv
+ * @param $evaluatedCsv
+ * @param $explainedCsv
+ * @return array
+ */
+function generateResponse($parsedCsv, $evaluatedCsv, $explainedCsv)
 {
-    $attributesData = getAttributesData();
-    $websiteValues  = getAttributeValues($parsedCsv, $attributesData);
-    $optimalValues  = getOptimalValues();
-
-    // TODO: get attribute data and send it to attribute values method
+    $selectedAttributes = getSelectedAttributes();
+    $websiteValues      = getAttributeValues($parsedCsv, $selectedAttributes);
+    $explanations       = getAttributeExplanations($explainedCsv);
 
     $websiteValues['rating'] = getRating($evaluatedCsv);
 
     return array(
-        'website'        => $websiteValues,
-        'attributesData' => $attributesData,
+        'website'      => $websiteValues,
+        'attributes'   => $selectedAttributes,
+        'explanations' => $explanations
     );
 }
 
-function getAttributesData()
+/**
+ * Returns a list of selected attributes and their descriptions
+ *
+ * @return array
+ */
+function getSelectedAttributes()
 {
-    $attributesData = array();
-
-    // read attributes names
-    // TODO: Get attribute optimal data etc to here
-    // TODO: Add optimal value here
-    // TODO: Use optimal value to check "validity"
-
-
+    $selectedAttributes = array();
 
     $row = 1;
-    if (($handle = fopen(ATTRIBUTES_CSV, "r")) !== FALSE) {
+    if (($handle = fopen(SELECTED_ATTRIBUTES_CSV, "r")) !== FALSE) {
         while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
             if($row == 1) {
                 $row++;
                 continue;
             }
-            $attributesData[$data[0]]['description'] = $data[1];
+            $selectedAttributes[$data[0]]['description'] = $data[1];
         }
     }
 
-    return $attributesData;
+    return $selectedAttributes;
 }
 
-// gets array of attribute values from parsed csv file
-function getAttributeValues($csvFile, $attributesData)
+/**
+ * Returns values for selected attributes
+ *
+ * @param $csvFile
+ * @param $selectedAttributes
+ * @return array
+ */
+function getAttributeValues($csvFile, $selectedAttributes)
 {
     // read parsed file
     if (($handle = fopen($csvFile, "r")) !== FALSE) {
@@ -176,7 +202,7 @@ function getAttributeValues($csvFile, $attributesData)
             );
             $values = array();
 
-            foreach ($attributesData as $attribute => $data) {
+            foreach ($selectedAttributes as $attribute => $data) {
                 $values[$attribute] = $allValues[$attribute];
             }
 
@@ -188,7 +214,42 @@ function getAttributeValues($csvFile, $attributesData)
     return array();
 }
 
-// get rounded rating from evaluated csv file
+/**
+ * Return explanations/influence for attributes
+ *
+ * @param $explainedCsv
+ * @return array
+ */
+function getAttributeExplanations($explainedCsv)
+{
+    $explanations = array();
+
+    // read explained csv file
+    $row = 1;
+    if (($handle = fopen($explainedCsv, "r")) !== FALSE) {
+        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            if($row == 1) {
+                $row++;
+                continue;
+            }
+
+            // [0] attribute
+            // [1] explanation
+            // [2] value
+            $explanations[$data[0]] = $data[1];
+        }
+        fclose($handle);
+    }
+
+    return $explanations;
+}
+
+/**
+ * Returns rounded rating from evaluated csv file
+ *
+ * @param $csvFile
+ * @return float
+ */
 function getRating($csvFile)
 {
     $row = 1;
@@ -207,18 +268,5 @@ function getRating($csvFile)
         fclose($handle);
     }
 
-    return false;
-}
-
-// gets optimal values
-function getOptimalValues()
-{
-
-
-    // TODO:
-    // read from OPTIMAL_VALUES_CSV
-    // TODO: Read optimal values from optimal.csv
-    // TODO: maybe rename this method?
-
-    return array();
+    return 0.0;
 }

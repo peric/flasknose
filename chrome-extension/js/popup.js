@@ -41,6 +41,7 @@ $evaluateButton.on("click", function() {
             showResults(request.responseText);
         }
     };
+    request.timeout = 0;
 
     request.send();
 
@@ -48,30 +49,43 @@ $evaluateButton.on("click", function() {
 });
 
 function showResults(data) {
-    var jsonResponse     = JSON.parse(data);
-    var $results         = $('#results');
-    var $resultsTable    = $('#results-table');
-    var websiteData      = jsonResponse['website'];
-    var attributesData   = jsonResponse['attributesData'];
+    var jsonResponse  = JSON.parse(data);
+    var $results      = $('#results');
+    var $resultsTable = $('#results-table');
+    var websiteData   = jsonResponse['website'];
+    var attributes    = jsonResponse['attributes'];
+    var explanations  = jsonResponse['explanations'];
+
+    // TODO: need best values
+
+    // clear
+    $resultsTable.find('tr:not(:first)').remove();
 
     for (var attribute in websiteData) {
+        var influenceClass = 'x-mark mark';
+
         // show rating
         if (attribute === 'rating') {
             $results.find('.rating > .score').html(websiteData[attribute]);
             continue;
         }
 
+        if (parseFloat(explanations[attribute]) >= 0) {
+            influenceClass = 'check-mark mark';
+        }
+
         $resultsTable.find('tr:last').after(
             '<tr>' +
-                '<td>' + attributesData[attribute]['description'] + '</td>' +
+                '<td>' + attributes[attribute]['description'] + '</td>' +
                 '<td>' + websiteData[attribute] + '</td>' +
-                '<td><span class="check-mark mark"></span><span class="x-mark mark"></span></td>' +
+                '<td><span class="' + influenceClass + '"></span></td>' +
                 '<td>/</td>' +
             '</tr>');
     }
 
+    // TODO: how to improve? read the model explanation?
+
     $results.show();
 
-    // TODO: do something with optimal values
-    // TODO: show x/j that depend on values
+    // TODO: keep window opened all the time
 }
