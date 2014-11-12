@@ -56,7 +56,8 @@ function showResults(data) {
     var attributes    = jsonResponse['attributes'];
     var explanations  = jsonResponse['explanations'];
 
-    // TODO: need best values
+
+
 
     // clear
     $resultsTable.find('tr:not(:first)').remove();
@@ -79,13 +80,11 @@ function showResults(data) {
                 '<td>' + attributes[attribute]['description'] + '</td>' +
                 '<td>' + websiteData[attribute] + '</td>' +
                 '<td><span class="' + influenceClass + '"></span></td>' +
-                '<td>/</td>' +
+                '<td>' + attributes[attribute]['bestValues'] + '</td>' +
             '</tr>');
     }
 
-    // TODO: how to improve? read the model explanation?
-
     $results.show();
 
-    // TODO: keep window opened all the time
+    // TODO: open results in new page
 }
