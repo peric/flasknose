@@ -56,14 +56,12 @@ function showResults(data) {
     var attributes    = jsonResponse['attributes'];
     var explanations  = jsonResponse['explanations'];
 
-
-
-
     // clear
     $resultsTable.find('tr:not(:first)').remove();
 
     for (var attribute in websiteData) {
         var influenceClass = 'x-mark mark';
+        var bestValue = attributes[attribute]['bestValue'];
 
         // show rating
         if (attribute === 'rating') {
@@ -75,12 +73,16 @@ function showResults(data) {
             influenceClass = 'check-mark mark';
         }
 
+        if (parseInt(attributes[attribute]['contribution']) === 0) {
+            bestValue = 'It does not matter.';
+        }
+
         $resultsTable.find('tr:last').after(
             '<tr>' +
                 '<td>' + attributes[attribute]['description'] + '</td>' +
                 '<td>' + websiteData[attribute] + '</td>' +
                 '<td><span class="' + influenceClass + '"></span></td>' +
-                '<td>' + attributes[attribute]['bestValues'] + '</td>' +
+                '<td>' + bestValue + '</td>' +
             '</tr>');
     }
 

@@ -255,7 +255,8 @@ function getBestContributions(&$selectedAttributes)
                 $row++;
                 continue;
             }
-            $selectedAttributes[$data[0]]['bestValues'] = $data[2];
+            $selectedAttributes[$data[0]]['contribution'] = $data[1];
+            $selectedAttributes[$data[0]]['bestValue'] = $data[2];
         }
     }
 
