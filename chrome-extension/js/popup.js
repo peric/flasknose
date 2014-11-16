@@ -89,4 +89,7 @@ function showResults(data) {
     $results.show();
 
     // TODO: open results in new page
+    // TODO: if boolean (0,1), write true/false
+    // TODO:
+
 }
