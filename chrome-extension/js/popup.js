@@ -61,13 +61,16 @@ function showResults(data) {
 
     for (var attribute in websiteData) {
         var influenceClass = 'x-mark mark';
-        var bestValue = attributes[attribute]['bestValue'];
+        var bestValue = null;
 
         // show rating
         if (attribute === 'rating') {
             $results.find('.rating > .score').html(websiteData[attribute]);
             continue;
         }
+
+        // bestValue does not exist for 'rating'
+        bestValue = attributes[attribute]['bestValue'];
 
         if (parseFloat(explanations[attribute]) >= 0) {
             influenceClass = 'check-mark mark';
@@ -89,7 +92,6 @@ function showResults(data) {
     $results.show();
 
     // TODO: open results in new page
+    // TODO: http://stackoverflow.com/questions/9949964/creating-a-chrome-extension-to-open-a-link-in-a-new-tab
     // TODO: if boolean (0,1), write true/false
-    // TODO:
-
 }
