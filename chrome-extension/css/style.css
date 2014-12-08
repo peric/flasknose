@@ -1,5 +1,5 @@
 body {
-    min-width: 800px;
+    min-width: 400px;
     overflow-x: hidden;
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
@@ -43,6 +43,11 @@ body {
     display: block;
     margin-top: 10px;
     padding-top: 20px;
+}
+.spinner-text {
+    display: none;
+    font-size: 18px;
+    margin-top: 30px;
 }
 .results {
     display: none;

@@ -41,6 +41,12 @@ $app->get('/evaluate', function(Request $request) use ($app) {
     return $app->json(array('message' => 'Url is not valid.'), 404);
 })->bind('evaulate_url');
 
+$app->get('/stop-processing', function(Request $request) use ($app) {
+    header('Access-Control-Allow-Origin: *');
+
+    exit();
+})->bind('stop_processing');
+
 $app->error(function (\Exception $e, $code) {
     switch ($code) {
         case 404:
