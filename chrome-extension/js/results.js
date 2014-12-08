@@ -34,8 +34,9 @@ $(function() {
             spinner.stop();
             $spinnerText.hide();
             showResults(request.responseText);
-        } else {
+        } else if (request.readyState == 4 && request.status==400) {
             spinner.stop();
+            $spinnerText.text('Sorry, something went wrong.');
         }
     };
     request.timeout = 0;
