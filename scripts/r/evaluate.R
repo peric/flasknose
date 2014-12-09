@@ -93,8 +93,8 @@ for (i in 1:length(attributeNames)) {
 
 # instance explanation
 instanceExplanation = explainInstance(rfNormalized, trainingSetNormalized, exampleToEvaluateNormalized[1,], 200)
-instanceAttributes = names(instanceExplanation$instance[1:length(instanceExplanation$instance)])
-instData = data.frame(attributes = factor(instanceAttributes), explanation = instanceExplanation$explanation, value = c(unlist(instanceExplanation$instance[1:length(instanceExplanation$instance)])))
+instanceAttributes = names(instanceExplanation$instance[1:length(instanceExplanation$instance)-1])
+instData = data.frame(attributes = factor(instanceAttributes), explanation = instanceExplanation$explanation, value = c(unlist(instanceExplanation$instance[1:length(instanceExplanation$instance)-1])))
 
 attrToRemove = c()
 for (i in 1:length(instData$attributes)) {

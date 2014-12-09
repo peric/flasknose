@@ -68,8 +68,8 @@ $app->error(function (\Exception $e, $code) {
 function runParser($url)
 {
     $parser = new Process(sprintf('cd %s && python wparser.py %s', WPARSER_DIRECTORY, $url));
-    $parser->setTimeout(3000);
-    $parser->setIdleTimeout(3000);
+    $parser->setTimeout(1200);
+    $parser->setIdleTimeout(1200);
 
     $parser->run();
 }
@@ -84,8 +84,8 @@ function runEvaluator($csvFile)
     $csvFile = '../' . $csvFile;
 
     $evaluator = new Process(sprintf('cd %s && Rscript evaluate.R %s', R_DIRECTORY, $csvFile));
-    $evaluator->setTimeout(3000);
-    $evaluator->setIdleTimeout(3000);
+    $evaluator->setTimeout(1200);
+    $evaluator->setIdleTimeout(1200);
 
     $evaluator->run();
 }
