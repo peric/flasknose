@@ -41,8 +41,6 @@ $(function() {
             $spinnerText.text('Sorry, something went wrong.');
             favicon.change('/images/icon.png');
         }
-        console.log(request.readyState)
-        console.log(request.status)
     };
     request.timeout = 0;
     request.send();
