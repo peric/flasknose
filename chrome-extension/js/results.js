@@ -1,7 +1,6 @@
 $(function() {
     var spinnerTarget = document.getElementById('spinner');
     var $spinnerText = $('.spinner-text');
-    var $websiteScored = $('#website-score-text');
     var opts = {
         lines: 7, // The number of lines to draw
         length: 0, // The length of each line
@@ -27,14 +26,14 @@ $(function() {
     request.open("GET", "http://server.virtual/evaluate" + "?url=" + currentUrl, true);
     spinner.spin(spinnerTarget);
     $spinnerText.text('Processing ' + currentUrl);
-    $websiteScored.text(currentUrl + ' scored');
     $spinnerText.show();
     request.onreadystatechange = function() {
         if (request.readyState == 4 && request.status==200) {
             spinner.stop();
             $spinnerText.hide();
+            $spinnerText.text(currentUrl + ' scored');
             showResults(request.responseText);
-        } else if (request.readyState == 4 && request.status==400) {
+        } else if (request.readyState != 4) {
             spinner.stop();
             $spinnerText.text('Sorry, something went wrong.');
         }
