@@ -5,6 +5,13 @@ body {
     margin: 0;
     padding: 0;
 }
+body a, a:active, a:visited {
+    text-decoration: none;
+    color: black;
+}
+body a:hover {
+    text-decoration: underline;
+}
 .content {
     width: 100%;
     text-align: center;

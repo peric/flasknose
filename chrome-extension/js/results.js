@@ -24,19 +24,25 @@ $(function() {
     var currentUrl = window.localStorage.getItem("currentUrl");
 
     request.open("GET", "http://server.virtual/evaluate" + "?url=" + currentUrl, true);
+
     spinner.spin(spinnerTarget);
     $spinnerText.text('Processing ' + currentUrl);
     $spinnerText.show();
+    favicon.change('/images/icon_busy.png');
+
     request.onreadystatechange = function() {
-        if (request.readyState == 4 && request.status==200) {
+        if (request.readyState == 4 && request.status == 200) {
             spinner.stop();
-            $spinnerText.hide();
-            $spinnerText.text(currentUrl + ' scored');
+            $spinnerText.html('<a href="' + currentUrl + '" target="_blank">' + currentUrl + '</a>');
             showResults(request.responseText);
-        } else if (request.readyState != 4) {
+            favicon.change('/images/icon.png');
+        } else if (request.readyState == 4 && request.status == 404) {
             spinner.stop();
             $spinnerText.text('Sorry, something went wrong.');
+            favicon.change('/images/icon.png');
         }
+        console.log(request.readyState)
+        console.log(request.status)
     };
     request.timeout = 0;
     request.send();
