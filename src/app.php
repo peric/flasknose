@@ -102,16 +102,16 @@ function generateResponse($parsedCsv, $evaluatedCsv, $explainedCsv)
 {
     $selectedAttributes = getSelectedAttributes();
     $websiteValues      = getAttributeValues($parsedCsv, $selectedAttributes);
-    $explanations       = getAttributeExplanations($explainedCsv);
+    $contributions      = getAttributeContributions($explainedCsv);
 
     getBestContributions($selectedAttributes);
 
     $websiteValues['rating'] = getRating($evaluatedCsv);
 
     return array(
-        'website'           => $websiteValues,
-        'attributes'        => $selectedAttributes,
-        'explanations'      => $explanations
+        'website'       => $websiteValues,
+        'attributes'    => $selectedAttributes,
+        'contributions' => $contributions
     );
 }
 
@@ -223,14 +223,14 @@ function getAttributeValues($csvFile, $selectedAttributes)
 }
 
 /**
- * Return explanations/influence for attributes
+ * Returns contributions for attributes
  *
  * @param $explainedCsv
  * @return array
  */
-function getAttributeExplanations($explainedCsv)
+function getAttributeContributions($explainedCsv)
 {
-    $explanations = array();
+    $contributions = array();
 
     // read explained csv file
     $row = 1;
@@ -244,12 +244,12 @@ function getAttributeExplanations($explainedCsv)
             // [0] attribute
             // [1] explanation
             // [2] value
-            $explanations[$data[0]] = $data[1];
+            $contributions[$data[0]] = $data[1];
         }
         fclose($handle);
     }
 
-    return $explanations;
+    return $contributions;
 }
 
 function getBestContributions(&$selectedAttributes)

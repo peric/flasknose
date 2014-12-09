@@ -51,7 +51,7 @@ $(function() {
         var $resultsTable = $('#results-table');
         var websiteData   = jsonResponse['website'];
         var attributes    = jsonResponse['attributes'];
-        var explanations  = jsonResponse['explanations'];
+        var contributions = jsonResponse['contributions'];
 
         // clear
         $resultsTable.find('tr:not(:first)').remove();
@@ -69,7 +69,7 @@ $(function() {
             // bestValue does not exist for 'rating'
             bestValue = attributes[attribute]['bestValue'];
 
-            if (parseFloat(explanations[attribute]) >= 0) {
+            if (parseFloat(contributions[attribute]) >= 0) {
                 influenceClass = 'check-mark mark';
             }
 
