@@ -56,6 +56,6 @@ sudo chown -R www-data:www-data /scripts
 
 ## Screenshots
 
-![alt tag](https://github.com/peric/flasknose/tree/master/images/01.png)
+![alt tag](https://www.dropbox.com/s/9vkq0957vgcejas/01.png)
 
-![alt tag](https://github.com/peric/flasknose/tree/master/images/03.png)
+![alt tag](https://www.dropbox.com/s/9vkq0957vgcejas/03.png)
