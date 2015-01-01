@@ -56,6 +56,6 @@ sudo chown -R www-data:www-data /scripts
 
 ## Screenshots
 
-![alt tag](https://www.dropbox.com/s/9vkq0957vgcejas/01.png)
+![Alt text](https://dl.dropboxusercontent.com/u/2425826/github/01.png)
 
-![alt tag](https://www.dropbox.com/s/9vkq0957vgcejas/03.png)
+![alt tag](https://dl.dropboxusercontent.com/u/2425826/github/03.png)
