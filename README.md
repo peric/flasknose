@@ -1,4 +1,4 @@
-# Flasknose-core
+# Flasknose
 
 Project is using PHP Silex framework, phantomjs, python and R.
 
@@ -53,3 +53,9 @@ or
 sudo chown -R www-data:www-data /exports
 sudo chown -R www-data:www-data /scripts
 ```
+
+## Screenshots
+
+![alt tag](https://github.com/peric/flasknose/tree/master/images/01.png)
+
+![alt tag](https://github.com/peric/flasknose/tree/master/images/03.png)
